@@ -13,6 +13,12 @@ router.post('/register', async (req, res) => {
 	try {
 		const { email, password, name } = req.body;
 
+		const checkUser = await User.findOne({ email: email });
+
+		if (checkUser) {
+			throw new Error('Email already exsist');
+		}
+
 		const user = await User.create({
 			name,
 			email,

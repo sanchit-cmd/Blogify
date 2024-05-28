@@ -60,13 +60,31 @@ router.post(
 );
 
 // Fetch all blogs
+// /blog?page=1&limit=10
 router.get('/', async (req, res) => {
 	try {
-		const allBlogs = await Blog.find({}).populate('createdBy', 'name');
+		const page = parseInt(req.query.page) || 1;
+		const limit = parseInt(req.query.limit) || 10;
+
+		const allBlogs = await Blog.find({})
+			.populate('createdBy', 'name')
+			.skip((page - 1) * limit)
+			.limit(limit);
+
 		if (!allBlogs || allBlogs.length === 0) {
 			return res.json({ message: 'No blogs found', blogs: null });
 		}
-		return res.json({ count: allBlogs.length, blogs: allBlogs });
+
+		const total = await Blog.countDocuments();
+		const pages = Math.ceil(total / limit);
+
+		return res.json({
+			totalPages: total,
+			totalPages: pages,
+			currentPage: page,
+			limit,
+			data: allBlogs,
+		});
 	} catch (error) {
 		console.log(error);
 		return res.status(201).json({ message: error.message });
@@ -118,6 +136,8 @@ router.put('/:id', authenticateAndAuthorize, async (req, res) => {
 			} else {
 				imageURL = blog.imageURL;
 			}
+			if (!title) title = blog.title;
+			if (!content) content = blog.content;
 
 			await Blog.findByIdAndUpdate(id, {
 				title,

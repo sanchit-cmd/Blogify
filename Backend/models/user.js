@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const { truncate } = require('fs/promises');
 
 var userSchema = new mongoose.Schema(
 	{
@@ -23,7 +22,7 @@ var userSchema = new mongoose.Schema(
 			required: true,
 		},
 	},
-	{ timestamps: truncate }
+	{ timestamps: true }
 );
 
 userSchema.pre('save', async function (next) {
