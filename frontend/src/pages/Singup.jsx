@@ -31,7 +31,7 @@ export default function Singup() {
 	}
 	return (
 		<Layout>
-			<div className='bg-white w-80 px-6 py-12 shadow-[rgba(6,_24,_44,_0.4)_0px_0px_0px_2px,_rgba(6,_24,_44,_0.65)_0px_4px_6px_-1px,_rgba(255,_255,_255,_0.08)_0px_1px_0px_inset] rounded-2xl flex items-center justify-between flex-col  mx-auto mt-20 gap-10'>
+			<div className='bg-white w-80 px-6 py-12 shadow-[rgba(6,_24,_44,_0.4)_0px_0px_0px_2px,_rgba(6,_24,_44,_0.65)_0px_4px_6px_-1px,_rgba(255,_255,_255,_0.08)_0px_1px_0px_inset] rounded-2xl flex items-center justify-between flex-col  mx-auto my-10 gap-10'>
 				<h3 className='text-xl font-black text-center'>Register</h3>
 
 				<form

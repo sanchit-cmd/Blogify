@@ -5,7 +5,7 @@ export default function Layout(props) {
 	return (
 		<>
 			<Navbar />
-			<main className='w-4/5 mx-auto'>{props.children}</main>
+			<main className='w-4/5 mx-auto overflow-x-hidden'>{props.children}</main>
 		</>
 	);
 }
