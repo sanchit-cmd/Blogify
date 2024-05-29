@@ -24,6 +24,13 @@ export default function Blog() {
 				res.data.createdAt
 			).toLocaleDateString('en-GB');
 
+			res.data.author =
+				res.data.createdBy.name.slice(0, 1).toUpperCase() +
+				res.data.createdBy.name.slice(
+					1,
+					res.data.createdBy.name.length
+				);
+
 			setBlog(res.data);
 		}
 
@@ -98,6 +105,9 @@ export default function Blog() {
 					{blog.title}
 					<span className='font-thin text-gray-500 text-sm block mt-2'>
 						Publish On: {blog.createdAt}
+						<span className='ml-4'>
+							Published By: {blog.author}
+						</span>
 					</span>
 				</h1>
 
