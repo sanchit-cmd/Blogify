@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Singup from './pages/Singup';
 import Blog from './pages/Blog';
 import NewBlog from './pages/NewBlog';
+import UpdateBlog from './pages/UpdateBlog';
 
 function App() {
 	return (
@@ -14,6 +15,7 @@ function App() {
 				<Route path='/singup' element={<Singup />} />
 				<Route path='/blog/:id' element={<Blog />} />
 				<Route path='/new-blog' element={<NewBlog />} />
+				<Route path='/update/:id' element={<UpdateBlog />} />
 			</Routes>
 		</>
 	);

@@ -1,12 +1,13 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { Link, json, useParams } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, json, useNavigate, useParams } from 'react-router-dom';
 import Layout from '../components/Layout';
 import Comment from '../components/Comments/Comment';
 import jwt from 'jsonwebtoken';
 
 export default function Blog() {
 	const { id } = useParams();
+	const navigate = useNavigate();
 
 	const [blog, setBlog] = useState({});
 	const [comments, setComments] = useState([]);
@@ -31,6 +32,7 @@ export default function Blog() {
 					res.data.createdBy.name.length
 				);
 
+			res.data.authorId = res.data.createdBy._id;
 			setBlog(res.data);
 		}
 
@@ -58,6 +60,14 @@ export default function Blog() {
 		getComments();
 	}, []);
 
+	function openModal() {
+		document.querySelector('#modal').showModal();
+	}
+
+	function closeModal() {
+		document.querySelector('#modal').close();
+	}
+
 	function handleDeleteComment(id) {
 		setComments(comments.filter(comment => comment._id !== id));
 	}
@@ -75,8 +85,6 @@ export default function Blog() {
 				},
 			}
 		);
-
-		console.log(res);
 
 		if (res.status === 200) {
 			setError(false);
@@ -98,6 +106,23 @@ export default function Blog() {
 		}
 	}
 
+	async function handleDeletePost() {
+		const res = await axios.delete(`http://localhost:3000/blog/${id}`, {
+			headers: {
+				'x-access-token': localStorage.getItem('token'),
+			},
+		});
+
+		if (res.status === 200) {
+			document.querySelector('#modal').close();
+			navigate('/');
+		} else {
+			setError(true);
+			setErrorMessage(res.data.message);
+			document.querySelector('#modal').close();
+		}
+	}
+
 	return (
 		<>
 			<Layout>
@@ -110,6 +135,53 @@ export default function Blog() {
 						</span>
 					</span>
 				</h1>
+				{error && (
+					<p className='text-red-500 text-sm text-center my-4'>
+						{errorMessage}
+					</p>
+				)}
+
+				{blog.authorId === currentUser.id && (
+					<div className='flex items-center justify-center gap-4 mb-2'>
+						<p
+							className='text-red-500 text-sm cursor-pointer'
+							onClick={() => {
+								navigate(`/update/${id}`);
+							}}
+						>
+							Edit
+						</p>
+						<p
+							className='text-red-500 text-sm cursor-pointer'
+							onClick={openModal}
+						>
+							Delete
+						</p>
+					</div>
+				)}
+
+				<dialog
+					className='bg-white shadow-2xl px-14 py-8 rounded-lg'
+					id='modal'
+				>
+					<p className='text-2xl block text-center mb-6'>
+						Are you sure?
+					</p>
+					<div className='flex items-center justify-center gap-4'>
+						<button
+							onClick={closeModal}
+							className='bg-green-600 px-6 py-2 rounded text-white'
+						>
+							No
+						</button>
+						<button
+							onClick={handleDeletePost}
+							className='bg-red-500 px-6 py-2 rounded text-white'
+						>
+							yes
+						</button>
+					</div>
+				</dialog>
 
 				<div className='flex items-center justify-center h-[300px] w-4/5 mx-auto overflow-hidden mb-20 rounded-md shadow-xl'>
 					<img
@@ -130,7 +202,7 @@ export default function Blog() {
 							<input
 								type='text'
 								placeholder='Comment...'
-								className='border border-black py-1 px-2 w-80 '
+								className='border border-black py-1 px-2 w-80'
 								value={commentInput}
 								onChange={e => setCommentInput(e.target.value)}
 							/>

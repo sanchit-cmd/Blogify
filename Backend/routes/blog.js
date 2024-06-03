@@ -103,13 +103,18 @@ router.get('/:id', async (req, res) => {
 });
 
 // Delete Blog
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateAndAuthorize, async (req, res) => {
 	try {
 		const { id } = req.params;
+		const blog = await Blog.findById(id).populate('createdBy');
+
+		if (blog.createdBy._id !== req.user.id)
+			throw new Error('Incorrect User');
+
 		await Blog.findByIdAndDelete(id);
 		return res.json({ message: 'Blog Deleted' });
 	} catch (error) {
-		return res.json({ message: error.message });
+		return res.status(201).json({ message: error.message });
 	}
 });
 
@@ -124,11 +129,9 @@ router.put('/:id', authenticateAndAuthorize, async (req, res) => {
 				throw new Error('Not a valid user');
 			}
 			const { title, content } = req.body;
-			console.log(title, content);
 
 			let imageURL;
 			if (!err && req.file) {
-				console.log(req.file);
 				const image = await cloudinary.uploader.upload(req.file.path, {
 					folder: 'blogify',
 				});
